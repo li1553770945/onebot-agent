@@ -1,0 +1,19 @@
+# 忽略数据目录
+data/
+app/
+
+# 忽略 Docker 相关文件
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# 忽略 Kubernetes 配置文件
+k8s-*.yaml
+
+# 忽略版本控制文件
+.git/
+.gitignore
+
+# 忽略临时文件
+*.tmp
+*.log

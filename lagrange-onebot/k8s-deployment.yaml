@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lagrange-onebot
+  labels:
+    app: lagrange-onebot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lagrange-onebot
+  template:
+    metadata:
+      labels:
+        app: lagrange-onebot
+    spec:
+      containers:
+      - name: lagrange-onebot
+        image: lagrange-onebot:local  # 使用本地构建的镜像
+        imagePullPolicy: Never  # 不从远程拉取，只使用本地镜像
+        ports:
+        - containerPort: 8000
+          name: http
+        volumeMounts:
+        - name: data-storage
+          mountPath: /app
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: data-storage
+        persistentVolumeClaim:
+          claimName: lagrange-onebot-pvc

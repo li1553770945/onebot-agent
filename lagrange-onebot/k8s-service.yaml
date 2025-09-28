@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: lagrange-onebot-service
+  labels:
+    app: lagrange-onebot
+spec:
+  type: ClusterIP  # 或者 LoadBalancer/NodePort，根据你的需求
+  ports:
+  - port: 8000
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  selector:
+    app: lagrange-onebot
