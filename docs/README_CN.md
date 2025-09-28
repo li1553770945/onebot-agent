@@ -27,10 +27,10 @@ sequenceDiagram
     onbot实现1（例如lagrange.onebot）->>消息分发服务: 1. onebot收到消息后推送
     消息分发服务->> Agent 1: 2.根据规则转发到对应的Agent
     Agent1 ->> LLM: 3. Agent调用LLM处理
-    Agent1 ->> MCPServer1: 3. Agent调用MCPServer，例如联网搜索
-    Agent1 ->> MessageSendMCPServer: 调用发送消息的MCP
-    MessageSendMCPServer ->> 消息分发服务: 推送回消息分发服务
-    消息分发服务 ->> onbot实现1（例如lagrange.onebot）: 调用对应的onebot实现发送消息
+    Agent1 ->> MCPServer1: 4. Agent调用MCPServer，例如联网搜索
+    Agent1 ->> MessageSendMCPServer: 5. 调用发送消息的MCP
+    MessageSendMCPServer ->> 消息分发服务: 6. 推送回消息分发服务
+    消息分发服务 ->> onbot实现1（例如lagrange.onebot）: 7.调用对应的onebot实现发送消息
 ```
 
 ## 服务列表

@@ -29,10 +29,10 @@ sequenceDiagram
 	onebot implementation 1 (e.g. lagrange.onebot) ->> Message Dispatch Service: 1. onebot receives message and pushes
 	Message Dispatch Service ->> Agent 1: 2. Forwards to corresponding Agent based on rules
 	Agent 1 ->> LLM: 3. Agent calls LLM for processing
-	Agent 1 ->> MCPServer 1: 3. Agent calls MCPServer, e.g. for web search
-	Agent 1 ->> MessageSendMCPServer: Calls MCP to send message
-	MessageSendMCPServer ->> Message Dispatch Service: Pushes back to Message Dispatch Service
-	Message Dispatch Service ->> onebot implementation 1 (e.g. lagrange.onebot): Calls corresponding onebot implementation to send message
+	Agent 1 ->> MCPServer 1: 4. Agent calls MCPServer, e.g. for web search
+	Agent 1 ->> MessageSendMCPServer: 5.Calls MCP to send message
+	MessageSendMCPServer ->> Message Dispatch Service: 6. Pushes back to Message Dispatch Service
+	Message Dispatch Service ->> onebot implementation 1 (e.g. lagrange.onebot): 7. Calls corresponding onebot implementation to send message
 ```
 
 ## Service List
