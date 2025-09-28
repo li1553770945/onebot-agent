@@ -1,6 +1,10 @@
+<div align="center">
+
 # 云原生架构适用于 onebot 协议的 Agent框架
 
-<center> English(README.md) | 中文 </center>
+English(README.md)
+
+</div>
 
 
 ## 系统架构

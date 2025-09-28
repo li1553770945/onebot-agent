@@ -1,8 +1,10 @@
+<div align="center">
 # Cloud-Native Architecture Agent Framework for Onebot Protocol
 
 
-<center>English | [中文](./docs/README_CN.md) </center>
+## English | [中文](./docs/README_CN.md)
 
+</div>
 
 ## System Architecture
 
