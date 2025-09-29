@@ -3,9 +3,11 @@ receiver:
     - from_type: group
       group_id: "515785850"
       user_id: ".*"
-      to_service: test-service
+      to_addr: http://test-agent:8000/message
       is_end: true
 sender:
   rules:
-    - self_id: "2731190200"
-      to_service: lagrange-onebot-service
+    - onebot_type: lagrange
+      self_id: "2731190200"
+      to_addr: http://lagrange-onebot:8000
+      is_end: true

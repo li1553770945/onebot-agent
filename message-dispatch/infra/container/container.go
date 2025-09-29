@@ -1,9 +1,11 @@
 package container
 
 import (
+	"sync"
+
 	"github.com/li1553770945/onebot-agent-message-dispatch/infra/config"
 	"github.com/li1553770945/onebot-agent-message-dispatch/server"
-	"sync"
+	"github.com/li1553770945/onebot-agent-message-dispatch/server/sender"
 )
 
 type Container struct {
@@ -39,7 +41,9 @@ func NewContainer(config *config.Config,
 
 func GetContainer(env string) *Container {
 	config := config.GetConfig(env)
-	httpServer := server.NewHttpServer(config)
+
+	lagrangeSender := sender.NewLagrangeSender()
+	httpServer := server.NewHttpServer(config, lagrangeSender)
 	app := NewContainer(config, httpServer)
 	return app
 }
