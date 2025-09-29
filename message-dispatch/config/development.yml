@@ -1,8 +1,11 @@
 receiver:
   rules:
-    - from_id: 515785850
+    - from_type: group
+      group_id: "515785850"
+      user_id: ".*"
       to_service: test-service
+      is_end: true
 sender:
   rules:
-    - self_id: 2731190200
+    - self_id: "2731190200"
       to_service: lagrange-onebot-service
