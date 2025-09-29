@@ -1,7 +1,8 @@
-package infra
+package config
 
 import (
 	"fmt"
+	"github.com/li1553770945/onebot-agent-message-dispatch/infra"
 	"gopkg.in/yaml.v3"
 	"os"
 	"path/filepath"
@@ -30,8 +31,8 @@ type Config struct {
 }
 
 func GetConfig(env string) *Config {
-	if env != EnvProduction && env != EnvDevelopment {
-		panic(fmt.Sprintf("环境必须是%s或者%s之一", EnvProduction, EnvDevelopment))
+	if env != infra.EnvProduction && env != infra.EnvDevelopment {
+		panic(fmt.Sprintf("环境必须是%s或者%s之一", infra.EnvProduction, infra.EnvDevelopment))
 	}
 	conf := &Config{}
 	path := filepath.Join("config", fmt.Sprintf("%s.yml", env))

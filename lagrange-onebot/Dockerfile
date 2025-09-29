@@ -18,7 +18,7 @@ RUN wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-p
 # 创建模板目录来存储原始文件
 WORKDIR /template
 COPY Lagrange.OneBot .
-COPY appsettings-local.json ./appsettings.json
+COPY appsettings.json ./appsettings.json
 
 # 设置执行权限
 RUN chmod +x Lagrange.OneBot

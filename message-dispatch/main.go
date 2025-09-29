@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	infra "github.com/li1553770945/onebot-agent-message-dispatch/infra"
 	"os"
+
+	infra "github.com/li1553770945/onebot-agent-message-dispatch/infra/container"
 )
 
 func main() {
@@ -13,5 +14,6 @@ func main() {
 	}
 	infra.InitGlobalContainer(env)
 	App := infra.GetGlobalContainer()
+	App.HttpServer.Start()
 	fmt.Print(App.Config.Env)
 }

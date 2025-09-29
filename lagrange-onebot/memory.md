@@ -1,0 +1,6 @@
+这是运行QQ机器人后端，使用Lagrange OneBot实现的OneBot协议的服务端，支持通过HTTP和WebSocket与客户端通信。
+
+我使用Docker容器化部署Lagrange OneBot，并将其与消息分发服务（message-dispatch）集成，以实现消息的接收和发送。
+
+我使用了k8s来管理和编排这些服务。deployment文件定义了服务的部署方式，而service文件则定义了服务的访问方式，pvc文件用于持久化存储。
+
