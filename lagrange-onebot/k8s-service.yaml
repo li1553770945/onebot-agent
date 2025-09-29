@@ -5,7 +5,7 @@ metadata:
   labels:
     app: lagrange-onebot
 spec:
-  type: ClusterIP  # 或者 LoadBalancer/NodePort，根据你的需求
+  type: ClusterIP 
   ports:
   - port: 8000
     targetPort: 8000

@@ -1,0 +1,8 @@
+receiver:
+  rules:
+    - from_id: 515785850
+      to_service: test-service
+sender:
+  rules:
+    - self_id: 2731190200
+      to_service: lagrange-onebot-service
