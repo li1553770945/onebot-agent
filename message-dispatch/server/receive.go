@@ -34,7 +34,7 @@ func (s *HttpServer) HandleReceiveDispatchMessage(msg *types.ReveiceMessage, bod
 	matchCount := 0
 	for _, rule := range s.config.Receiver.Rules {
 		if s.IsReceiveMatchRule(msg, &rule) {
-			fmt.Printf("匹配到规则: %+v\n", rule.ToAddr)
+			fmt.Printf("匹配到规则: %+v\n", rule.Name)
 			s.SendToService(&rule, bodyBytes)
 			matchCount++
 			if rule.IsEnd {
@@ -45,8 +45,7 @@ func (s *HttpServer) HandleReceiveDispatchMessage(msg *types.ReveiceMessage, bod
 	fmt.Println("匹配到规则数量:", matchCount)
 }
 func (s *HttpServer) SendToService(rule *config.ReceiveRule, bodyBytes []byte) {
-	addr := fmt.Sprint(rule.ToAddr, "/send")
-	resp, err := http.Post(addr, "application/json", bytes.NewBuffer(bodyBytes))
+	resp, err := http.Post(rule.ToAddr, "application/json", bytes.NewBuffer(bodyBytes))
 	if err != nil || resp.StatusCode != 200 {
 		fmt.Println("发送消息失败:", err)
 		return

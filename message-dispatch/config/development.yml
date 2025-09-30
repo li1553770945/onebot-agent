@@ -1,13 +1,27 @@
 receiver:
   rules:
-    - from_type: group
+    - name: "测试用群"
+      from_type: group
       group_id: "515785850"
       user_id: ".*"
       to_addr: http://test-agent:8000/message
       is_end: true
+    - name: "ICPC南京站大群"
+      from_type: group
+      group_id: "1070161797"
+      user_id: ".*"
+      to_addr: http://icpc-nanjing-agent:3000/message
+      is_end: true
+    - name: "ICPC南京站技术群"
+      from_type: group
+      group_id: "217221751"
+      user_id: ".*"
+      to_addr: http://icpc-nanjing-agent:3000/message
+      is_end: false
 sender:
   rules:
-    - onebot_type: lagrange
+    - name: "aibot的QQ"
+      onebot_type: lagrange
       self_id: "2731190200"
       to_addr: http://lagrange-onebot:8000
       is_end: true

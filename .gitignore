@@ -141,3 +141,4 @@ vite.config.ts.timestamp-*
 # Lagrange onebot directory - ignore all but keep specific files
 lagrange-onebot/app
 .idea
+icpc-nanjing-agent

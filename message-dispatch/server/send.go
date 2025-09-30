@@ -35,7 +35,7 @@ func (s *HttpServer) HandleSendDispatchMessage(msg *types.SendMessage) {
 	matchCount := 0
 	for _, rule := range s.config.Sender.Rules {
 		if s.IsSendMatchRule(msg, &rule) {
-			fmt.Printf("匹配到规则: %+v\n", rule.ToAddr)
+			fmt.Printf("匹配到规则: %+v\n", rule.Name)
 			s.SendMessage(&rule, msg)
 			matchCount++
 			if rule.IsEnd {
