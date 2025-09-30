@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: icpc-nanjing-agent
+  labels:
+    app: icpc-nanjing-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: icpc-nanjing-agent
+  template:
+    metadata:
+      labels:
+        app: icpc-nanjing-agent
+    spec:
+      containers:
+        - name: icpc-nanjing-agent
+          image: icpc-nanjing-agent:local # 本地构建的镜像名
+          imagePullPolicy: Never          # 使用本地镜像（kind 或 local k8s）
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: production
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
