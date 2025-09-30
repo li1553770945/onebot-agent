@@ -14,6 +14,7 @@ import (
 
 func (s *HttpServer) HandleReceiveMessage(c *gin.Context) {
 	bodyBytes, err := c.GetRawData()
+	fmt.Printf("收到消息：%s\n", string(bodyBytes))
 	if err != nil {
 		fmt.Println("读取 body 失败:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "读取 body 失败"})
@@ -25,19 +26,16 @@ func (s *HttpServer) HandleReceiveMessage(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "解析失败"})
 		return
 	}
-	s.HandleReceiveDispatchMessage(&msg)
+	s.HandleReceiveDispatchMessage(&msg, bodyBytes)
 	c.JSON(http.StatusOK, gin.H{"message": "pong"})
 }
 
-func (s *HttpServer) HandleReceiveDispatchMessage(msg *types.ReveiceMessage) {
-	if msg.PostType != "message" {
-		return
-	}
+func (s *HttpServer) HandleReceiveDispatchMessage(msg *types.ReveiceMessage, bodyBytes []byte) {
 	matchCount := 0
 	for _, rule := range s.config.Receiver.Rules {
 		if s.IsReceiveMatchRule(msg, &rule) {
 			fmt.Printf("匹配到规则: %+v\n", rule.ToAddr)
-			s.SendToService(&rule, msg)
+			s.SendToService(&rule, bodyBytes)
 			matchCount++
 			if rule.IsEnd {
 				break
@@ -46,14 +44,9 @@ func (s *HttpServer) HandleReceiveDispatchMessage(msg *types.ReveiceMessage) {
 	}
 	fmt.Println("匹配到规则数量:", matchCount)
 }
-func (s *HttpServer) SendToService(rule *config.ReceiveRule, msg *types.ReveiceMessage) {
+func (s *HttpServer) SendToService(rule *config.ReceiveRule, bodyBytes []byte) {
 	addr := fmt.Sprint(rule.ToAddr, "/send")
-	jsonData, err := json.Marshal(msg)
-	if err != nil {
-		fmt.Println("消息序列化失败:", err)
-		return
-	}
-	resp, err := http.Post(addr, "application/json", bytes.NewBuffer(jsonData))
+	resp, err := http.Post(addr, "application/json", bytes.NewBuffer(bodyBytes))
 	if err != nil || resp.StatusCode != 200 {
 		fmt.Println("发送消息失败:", err)
 		return
