@@ -1,0 +1,266 @@
+{
+  "clientId": "719aa5a1-a5a1-5aa5a14e1ab-8aa5a14e1abb26b-bb26b39f",
+  "currentIndex": 2,
+  "tabs": [
+    {
+      "name": "工具",
+      "icon": "icon-tool",
+      "type": "blank",
+      "componentIndex": 2,
+      "storage": {
+        "activeNames": [
+          0
+        ],
+        "autoDetectDiagram": {
+          "edges": [],
+          "views": []
+        },
+        "formData": {
+          "self_id": "123",
+          "group": "123",
+          "message": ""
+        },
+        "currentToolName": "send_group_message"
+      }
+    },
+    {
+      "name": "提词",
+      "icon": "icon-chat",
+      "type": "blank",
+      "componentIndex": 1,
+      "storage": {
+        "activeNames": [
+          0
+        ],
+        "formData": {},
+        "currentPromptName": ""
+      }
+    },
+    {
+      "name": "交互测试",
+      "icon": "icon-robot",
+      "type": "blank",
+      "componentIndex": 3,
+      "storage": {
+        "activeNames": [
+          0
+        ],
+        "messages": [
+          {
+            "role": "user",
+            "content": "你是一名入群审核员，负责管理群聊ID 345（你的ID是1234）。入群规则要求：用户的入群备注必须符合“学校+姓名”的基本格式，其中“学校”和“姓名”之间允许使用任意字符（如空格、标点或符号）连接，但备注内容不得包含任何暴力、恐怖、色情等违法违规内容。\n\n现在，用户ID 111申请入群，其备注为“共产党垃圾南航 李志贤”。请根据以下步骤进行审核：\n\n判断备注是否符合格式：\n\n如果备注明确包含“学校”和“姓名”部分（例如，通过任意字符连接），且无违法违规内容，则同意该用户的入群请求。\n\n如果备注不符合格式，或包含违法违规内容，则拒绝入群请求，并注明拒绝理由（例如：“备注格式不符合学校-”或“包含违法违规内容”）。\n\n如果你无法确定备注是否符合格式（例如，备注模糊或无法解析），则视为不确定情况。\n\n根据判断结果执行操作：\n\n如果符合：直接同意入群，无需额外操作。\n\n如果不符合：请向群聊ID 515785850发送一条消息，内容为“AI入群审核不通过，请人工确认操作”，然后附上请求入群的用户ID、入群备注以及拒绝原因。\n\n如果不确定：向群聊ID 515785850发送一条消息，内容“AI审核无法判定入群备注是否合法，需人工审核”，然后附上用户ID、入群备注以及你不确定的原因（例如：“无法解析学校或姓名部分”）。\n\n请基于以上规则严格审核，并确保所有操作及时、准确。",
+            "extraInfo": {
+              "created": 1759336271600,
+              "state": "success",
+              "serverName": "deepseek",
+              "enableXmlWrapper": false
+            }
+          },
+          {
+            "role": "assistant",
+            "content": "我来分析这个入群申请：\n\n用户ID：111\n入群备注：\"共产党垃圾南航 李志贤\"\n\n**审核分析：**\n1. 格式检查：备注中确实包含\"南航\"（学校部分）和\"李志贤\"（姓名部分），通过空格连接，符合\"学校+姓名\"的基本格式要求。\n\n2. 内容检查：备注中包含\"共产党垃圾\"这样的表述，这属于对中国共产党进行侮辱和攻击的内容，违反了不得包含违法违规内容的规定。\n\n**判断结果：不符合入群要求**\n\n**执行操作：**",
+            "tool_calls": [
+              {
+                "id": "call_00_YEOBDq4YeOQDkjQqRkzw8zwn",
+                "index": 0,
+                "type": "function",
+                "function": {
+                  "name": "reject_add_request",
+                  "arguments": "{\"self_id\": \"1234\", \"user_id\": \"111\", \"group\": \"345\", \"comment\": \"包含违法违规内容\"}"
+                }
+              },
+              {
+                "id": "call_01_fac3uhKpWnv9Eq97kxdjzCLI",
+                "index": 1,
+                "type": "function",
+                "function": {
+                  "name": "send_group_message",
+                  "arguments": "{\"self_id\": \"1234\", \"group\": \"515785850\", \"message\": \"AI入群审核不通过，请人工确认操作\\n用户ID：111\\n入群备注：共产党垃圾南航 李志贤\\n拒绝原因：包含违法违规内容（对中国共产党进行侮辱攻击）\"}"
+                }
+              }
+            ],
+            "extraInfo": {
+              "created": 1759336282164,
+              "state": "success",
+              "serverName": "deepseek",
+              "enableXmlWrapper": false
+            }
+          },
+          {
+            "role": "tool",
+            "index": 0,
+            "tool_call_id": "call_00_YEOBDq4YeOQDkjQqRkzw8zwn",
+            "content": [
+              {
+                "type": "text",
+                "text": "拒绝 111 加入 345 群组的请求, 操作者是 1234"
+              }
+            ],
+            "extraInfo": {
+              "created": 1759336282176,
+              "state": "success",
+              "serverName": "deepseek",
+              "usage": {
+                "prompt_tokens": 738,
+                "completion_tokens": 226,
+                "total_tokens": 964,
+                "prompt_tokens_details": {
+                  "cached_tokens": 448
+                },
+                "prompt_cache_hit_tokens": 448,
+                "prompt_cache_miss_tokens": 290
+              },
+              "enableXmlWrapper": false
+            }
+          },
+          {
+            "role": "tool",
+            "index": 1,
+            "tool_call_id": "call_01_fac3uhKpWnv9Eq97kxdjzCLI",
+            "content": [
+              {
+                "type": "text",
+                "text": "1234 向 515785850 群组发送消息: AI入群审核不通过，请人工确认操作\n用户ID：111\n入群备注：共产党垃圾南航 李志贤\n拒绝原因：包含违法违规内容（对中国共产党进行侮辱攻击）"
+              }
+            ],
+            "extraInfo": {
+              "created": 1759336282184,
+              "state": "success",
+              "serverName": "deepseek",
+              "usage": {
+                "prompt_tokens": 738,
+                "completion_tokens": 226,
+                "total_tokens": 964,
+                "prompt_tokens_details": {
+                  "cached_tokens": 448
+                },
+                "prompt_cache_hit_tokens": 448,
+                "prompt_cache_miss_tokens": 290
+              },
+              "enableXmlWrapper": false
+            }
+          },
+          {
+            "role": "assistant",
+            "content": "已成功完成审核操作：\n\n1. **拒绝了用户111的入群请求**，拒绝原因为\"包含违法违规内容\"\n\n2. **向群聊515785850发送了通知消息**，内容包括：\n   - AI审核不通过提示\n   - 用户ID：111\n   - 入群备注：共产党垃圾南航 李志贤\n   - 详细拒绝原因：包含违法违规内容（对中国共产党进行侮辱攻击）\n\n该用户的入群备注虽然格式上符合\"学校+姓名\"的要求，但内容中包含对中国共产党进行侮辱攻击的表述，违反了不得包含违法违规内容的规定，因此不予通过。",
+            "extraInfo": {
+              "created": 1759336288559,
+              "state": "success",
+              "serverName": "deepseek",
+              "usage": {
+                "prompt_tokens": 1064,
+                "completion_tokens": 130,
+                "total_tokens": 1194,
+                "prompt_tokens_details": {
+                  "cached_tokens": 832
+                },
+                "prompt_cache_hit_tokens": 832,
+                "prompt_cache_miss_tokens": 232
+              },
+              "enableXmlWrapper": false
+            }
+          }
+        ],
+        "parallelMode": false,
+        "parallelChats": [],
+        "selectedModels": [],
+        "settings": {
+          "modelIndex": 0,
+          "enableTools": [
+            {
+              "name": "approve_add_request",
+              "description": "同意加群请求",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "self_id": {
+                    "type": "string",
+                    "description": "自己的用户id"
+                  },
+                  "user_id": {
+                    "type": "string",
+                    "description": "要加群的用户id"
+                  },
+                  "group": {
+                    "type": "string",
+                    "description": "群组id"
+                  }
+                },
+                "required": [
+                  "self_id",
+                  "user_id",
+                  "group"
+                ]
+              },
+              "enabled": true
+            },
+            {
+              "name": "reject_add_request",
+              "description": "拒绝加群请求",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "self_id": {
+                    "type": "string",
+                    "description": "自己的用户id"
+                  },
+                  "user_id": {
+                    "type": "string",
+                    "description": "要加群的用户id"
+                  },
+                  "group": {
+                    "type": "string",
+                    "description": "群组id"
+                  },
+                  "comment": {
+                    "type": "string",
+                    "description": "拒绝理由"
+                  }
+                },
+                "required": [
+                  "self_id",
+                  "user_id",
+                  "group"
+                ]
+              },
+              "enabled": true
+            },
+            {
+              "name": "send_group_message",
+              "description": "发送群消息",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "self_id": {
+                    "type": "string",
+                    "description": "自己的用户id"
+                  },
+                  "group": {
+                    "type": "string",
+                    "description": "群组id"
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "消息内容"
+                  }
+                },
+                "required": [
+                  "self_id",
+                  "group",
+                  "message"
+                ]
+              },
+              "enabled": true
+            }
+          ],
+          "enableWebSearch": false,
+          "temperature": 0.6,
+          "contextLength": 100,
+          "systemPrompt": "",
+          "enableXmlWrapper": false,
+          "parallelToolCalls": true
+        }
+      }
+    }
+  ]
+}

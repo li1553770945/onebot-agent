@@ -1,28 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: icpc-nanjing-agent
+  name: mcp-server
   labels:
-    app: icpc-nanjing-agent
+    app: mcp-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: icpc-nanjing-agent
+      app: mcp-server
   template:
     metadata:
       labels:
-        app: icpc-nanjing-agent
+        app: mcp-server
     spec:
       containers:
-        - name: icpc-nanjing-agent
-          image: icpc-nanjing-agent:local # 本地构建的镜像名
-          imagePullPolicy: Never          # 使用本地镜像（kind 或 local k8s）
+        - name: mcp-server
+          image: mcp-server:local # 本地或仓库中的镜像名
+          imagePullPolicy: Never  # 使用 kind 或本地 k8s 时
           ports:
             - containerPort: 3000
           env:
             - name: NODE_ENV
               value: production
+            - name: PORT
+              value: "3000"
           readinessProbe:
             httpGet:
               path: /ping
