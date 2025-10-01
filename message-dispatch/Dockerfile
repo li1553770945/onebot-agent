@@ -14,7 +14,7 @@ FROM alpine:3.18
 WORKDIR /app
 COPY --from=builder /app/message-dispatch .
 COPY config/ ./config/
-EXPOSE 8080
+EXPOSE 15001
 
 # 启动服务
 ENTRYPOINT ["./message-dispatch"]

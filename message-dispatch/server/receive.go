@@ -26,7 +26,9 @@ func (s *HttpServer) HandleReceiveMessage(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "解析失败"})
 		return
 	}
-	s.HandleReceiveDispatchMessage(&msg, bodyBytes)
+	if msg.PostType != "meta_event" {
+		s.HandleReceiveDispatchMessage(&msg, bodyBytes)
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "pong"})
 }
 

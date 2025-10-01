@@ -10,8 +10,5 @@ spec:
     app: message-dispatch
   ports:
     - protocol: TCP
-      port: 7000
-      targetPort: 7000
-    - protocol: TCP
-      port: 8080
-      targetPort: 8080
+      port: 15001
+      targetPort: 15001

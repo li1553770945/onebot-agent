@@ -19,7 +19,7 @@ spec:
         image: lagrange-onebot:local  # 使用本地构建的镜像
         imagePullPolicy: Never  # 不从远程拉取，只使用本地镜像
         ports:
-        - containerPort: 8000
+        - containerPort: 16000
           name: http
         volumeMounts:
         - name: data-storage
