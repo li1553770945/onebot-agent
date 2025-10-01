@@ -4,7 +4,7 @@ receiver:
       from_type: group
       group_id: "515785850"
       user_id: ".*"
-      to_addr: http://icpc-nanjing-agent:8000/message
+      to_addr: http://icpc-nanjing-agent:3000/message
       is_end: true
     - name: "ICPC南京站大群"
       from_type: group
