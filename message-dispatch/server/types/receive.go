@@ -61,5 +61,6 @@ type ReveiceMessage struct {
 	Time        int64                `json:"time"`
 	PostType    string               `json:"post_type"`
 	SelfID      StringOrNumber       `json:"self_id"`
+	RequestType string               `json:"request_type"`
 	// 其他字段可按需添加
 }

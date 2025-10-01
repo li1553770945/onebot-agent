@@ -31,13 +31,3 @@ docker run -d  --name lagrange-onebot --network onebot-agent -p 15000:15000  -v 
 ```
 运行上述命令后，如果之前未登录过，会在`lagrange-onebot/app`目录生成qr-0.png，需要扫描该图片二维码登录，登录成功后会生成keystore.json，也可查看容器log确保登录成功，此时容器的15000端口将对外开放为lagrange.onebot的正向HTTP服务。
 
-## 构建和登录icpc-nanjing-agent
-
-```bash
-cd icpc-nanjing-agent
-## 构建
-docker build -t icpc-nanjing-agent:local .
-## 运行测试
-docker run -d  --name icpc-nanjing-agent --network onebot-agent -p 3000:3000  -v ./config:/app/config icpc-nanjing-agent:local 
-```
-

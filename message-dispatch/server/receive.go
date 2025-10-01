@@ -14,7 +14,7 @@ import (
 
 func (s *HttpServer) HandleReceiveMessage(c *gin.Context) {
 	bodyBytes, err := c.GetRawData()
-	fmt.Printf("收到消息：%s\n", string(bodyBytes))
+
 	if err != nil {
 		fmt.Println("读取 body 失败:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "读取 body 失败"})
@@ -27,6 +27,7 @@ func (s *HttpServer) HandleReceiveMessage(c *gin.Context) {
 		return
 	}
 	if msg.PostType != "meta_event" {
+		fmt.Printf("收到消息：%s\n", string(bodyBytes))
 		s.HandleReceiveDispatchMessage(&msg, bodyBytes)
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "pong"})
@@ -49,14 +50,14 @@ func (s *HttpServer) HandleReceiveDispatchMessage(msg *types.ReveiceMessage, bod
 func (s *HttpServer) SendToService(rule *config.ReceiveRule, bodyBytes []byte) {
 	resp, err := http.Post(rule.ToAddr, "application/json", bytes.NewBuffer(bodyBytes))
 	if err != nil || resp.StatusCode != 200 {
-		fmt.Println("发送消息失败:", err)
+		fmt.Printf("Receive发送消息到服务失败: %v,HTTP状态码: %d", err, resp.StatusCode)
 		return
 	}
 
 }
 func (s *HttpServer) IsReceiveMatchRule(msg *types.ReveiceMessage, rule *config.ReceiveRule) bool {
 	// 匹配消息类型
-	if rule.FromType != "all" && rule.FromType != msg.MessageType {
+	if rule.FromType != "all" && rule.FromType != msg.MessageType && rule.FromType != msg.RequestType {
 		return false
 	}
 	// 匹配 group_id（群聊时才判断）
