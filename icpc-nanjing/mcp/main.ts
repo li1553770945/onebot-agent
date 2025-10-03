@@ -61,6 +61,33 @@ server.registerTool(
 );
 
 server.registerTool(
+  "set_group_card",
+  {
+    description: "设置群成员名片",
+    inputSchema: {
+      self_id: z.string().describe("自己的用户id"),
+      user_id: z.string().describe("要设置群名片的用户ID"),
+      group_id: z.string().describe("群ID"),
+      card: z.string().describe("名片内容"),
+    },
+  },
+  async ({ self_id, user_id, group_id, card }) => {
+    console.log(`Setting group card for user: ${user_id}, group: ${group_id}, self_id: ${self_id}`);
+    const body = {
+      user_id: user_id,
+      group_id: group_id,
+      card: card
+    }
+    const result = await axios.post('http://lagrange-onebot-service:15000/set_group_card', body);
+    return {
+      content: [
+        { type: "text", text: typeof result.data === "string" ? result.data : JSON.stringify(result.data) },
+      ],
+    };
+  }
+);
+
+server.registerTool(
   "send_group_message",
   {
     description: "发送群消息",
