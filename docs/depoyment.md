@@ -19,7 +19,7 @@ kubectl create configmap message-dispatch-config --from-file=production.yml=conf
 
 注意：请确保`lagrange-onebot/app`目录存在，并且在测试流程中已经登录，生成了对应的device.json、keystore.json等文件，否则k8s容器启动后还需要手动登录。
 
-由于k8s限制无法使用相对路径，**请修改`lagrange-onebot\k8s-pv.yml`中的hostPath路径为你的绝对路径**。如果你在Windows使用并且使用的是Docker Desktop的k8s集群，**不能使用Windows上的绝对路径！**必须使用特定的linux目录写法，不同Docker Desktop版本可能存在差异，可以使用`kubectl debug node/docker-desktop -it --image=busybox`命令启动busybox，想办法找到对应的路径写法。请务必确认路径正确，例如作者电脑上Windows路径为`E:\node-project\onebot-agent\lagrange-onebot\app`，对应的路径写法为：
+由于k8s限制无法使用相对路径，**复制k8s-pv.template.yml为k8s-pv.yml，并且请修改`lagrange-onebot\k8s-pv.yml`中的hostPath路径为你的绝对路径**。如果你在Windows使用并且使用的是Docker Desktop的k8s集群，**不能使用Windows上的绝对路径！**必须使用特定的linux目录写法，不同Docker Desktop版本可能存在差异，可以使用`kubectl debug node/docker-desktop -it --image=busybox`命令启动busybox，想办法找到对应的路径写法。请务必确认路径正确，例如作者电脑上Windows路径为`E:\node-project\onebot-agent\lagrange-onebot\app`，对应的路径写法为：
 
 ```yaml
       volumes:

@@ -34,6 +34,31 @@ server.registerTool(
   }
 );
 
+server.registerTool(
+  "reject_add_request",
+  {
+    description: "拒绝加群请求",
+    inputSchema: {
+      self_id: z.string().describe("自己的用户id"),
+      flag: z.string().describe("加群请求的标识"),
+      reason: z.string().describe("拒绝理由").optional(),
+    },
+  },
+  async ({ self_id, flag, reason }) => {
+    console.log(`Rejecting add request for flag: ${flag}, self_id: ${self_id}`);
+    const body = {
+      approve: false,
+      flag:flag,
+      reason: reason
+    }
+    const result = await axios.post('http://lagrange-onebot-service:15000/set_group_add_request', body);
+    return {
+      content: [
+        { type: "text", text: typeof result.data === "string" ? result.data : JSON.stringify(result.data) },
+      ],
+    };
+  }
+);
 
 server.registerTool(
   "send_group_message",

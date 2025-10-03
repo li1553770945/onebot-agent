@@ -29,4 +29,4 @@ VOLUME ["/app"]
 EXPOSE 8000
 
 # 启动脚本：将模板文件复制到 /app 并运行程序
-CMD ["sh", "-c", "cp -r /template/* /app/ && cd /app && ./Lagrange.OneBot"]
+CMD ["sh", "-c", "cp -a /template/* /app/ && cd /app && ./Lagrange.OneBot"]

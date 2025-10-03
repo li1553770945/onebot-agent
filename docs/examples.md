@@ -12,7 +12,6 @@ docker run -d  --name icpc-nanjing-mcp --network onebot-agent -p 3000:3000  -v .
 ## 部署
 kubectl apply -f k8s-deployment.yml
 kubectl apply -f k8s-service.yml
-kubectl apply -f k8s-secret.yml
 
 
 ## 更新后重启
