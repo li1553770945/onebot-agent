@@ -1,6 +1,13 @@
 # MCP Server 模块
 
-提供一个示例 Model Context Protocol (MCP) 服务端，包含一个 `summarize` 工具（调用 MCP LLM sampling）以及 HTTP `/ping` 健康检查端点。
+提供一个QQ群相关MCP服务端，包含几个工具，以及 HTTP `/ping` 健康检查端点。
+
+## 工具列表
+
+1. 接受入群申请
+2. 拒绝入群申请
+3. 修改群名片
+4. 发送群消息
 
 ## 目录结构
 ```
@@ -70,18 +77,3 @@ curl http://127.0.0.1:3000/ping
 ## 健康检查
 - Readiness: GET /ping -> 200 ok
 - Liveness:  GET /ping -> 200 ok
-
-## 环境变量
-| 名称 | 默认 | 说明 |
-|------|------|------|
-| PORT | 3000 | 健康检查 HTTP 端口 |
-| NODE_ENV | development/production | 运行模式 |
-
-## 后续可扩展建议
-- 增加日志库 (pino / winston)
-- 增加 OpenTelemetry 指标与 trace
-- 增加更多 MCP Tools（如搜索、向量检索）
-- 集成 CI (lint + typecheck + build + docker build)
-
----
-如需进一步定制，继续提需求即可。
