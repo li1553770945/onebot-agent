@@ -20,13 +20,12 @@ server.registerTool(
     },
   },
   async ({ self_id, flag }) => {
+    console.log(`Approving add request for flag: ${flag}, self_id: ${self_id}`);
     const body = {
-      self_id:self_id,
       approve: true,
       flag:flag
     }
-    const bodyStr = JSON.stringify(body);
-    const result = await axios.post('http://lagrange-onebot:15000/set_group_add_request', bodyStr);
+    const result = await axios.post('http://lagrange-onebot-service:15000/set_group_add_request', body);
     return {
       content: [
         { type: "text", text: typeof result.data === "string" ? result.data : JSON.stringify(result.data) },
@@ -78,6 +77,11 @@ server.registerTool(
 const app = express();
 app.use(express.json());
 
+// 简单健康检查：GET /ping
+app.get("/ping", (_req: Request, res: Response) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
 // 仅保留一个端点：/mcp
 app.all("/mcp", async (req: Request, res: Response) => {
   try {
@@ -106,5 +110,5 @@ app.all("/mcp", async (req: Request, res: Response) => {
 // 3) 启动在 3000 端口
 const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`MCP Streamable HTTP server listening on http://127.0.0.1:${PORT}/mcp`);
+  console.log(`MCP Streamable HTTP server listening on :${PORT}/mcp`);
 });

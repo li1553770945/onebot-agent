@@ -16,7 +16,7 @@
     "lint": "eslint . --ext .ts --max-warnings=0"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^0.1.0",
+  "@modelcontextprotocol/sdk": "^1.18.2",
     "@nestjs/config": "^4.0.2",
     "@types/express": "^5.0.3",
     "@types/joi": "^17.2.3",

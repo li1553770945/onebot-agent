@@ -15,7 +15,7 @@ export const getRequestGroup = (self_id: string, user_id: string, flag: string, 
 
     根据判断结果执行操作：
 
-    如果符合：直接同意入群，无需额外操作。
+    如果符合：直接同意入群，无需额外操作，无需发送任何消息，仅当工具调用失败时向群聊ID ${notify_group_id}发送一条消息说明失败原因。
 
     如果不符合：请向群聊ID ${notify_group_id}发送一条消息，内容为“AI入群审核不通过，请人工确认操作”，然后附上请求入群的用户ID、入群备注以及拒绝原因。
 

@@ -1,8 +1,29 @@
+# 依赖缓存目录（不随源码发送）
 node_modules
-npm-debug.log
-yarn-error.log
+
+# 日志 & 临时
+npm-debug.log*
+yarn-error.log*
+*.log
+
+# 编译产物在镜像内构建，不需要发送
 dist
+
+# VCS
 .git
 .gitignore
+
+# Docker 自身文件
 Dockerfile
+
+# 文档（可根据需要排除或保留，这里排除提升构建速度）
 *.md
+
+# 环境/本地配置
+.env
+.env.*
+.DS_Store
+Thumbs.db
+
+# TypeScript 增量缓存
+*.tsbuildinfo

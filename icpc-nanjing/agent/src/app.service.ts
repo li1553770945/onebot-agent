@@ -1,12 +1,44 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { getRequestGroup } from './prompts';
-import { OmAgent } from 'openmcp-sdk/service/sdk';
-import { ConnectionType } from 'openmcp-sdk/service/mcp/client.dto';
+import { MultiServerMCPClient } from "@langchain/mcp-adapters";
+import { createReactAgent } from "@langchain/langgraph/prebuilt";
+import { ChatOpenAI } from "@langchain/openai";
 
 @Injectable()
 export class AppService {
-  constructor(private readonly config: ConfigService) { }
+  private mcpClient: MultiServerMCPClient;
+  private llm: ChatOpenAI;
+  private agent: ReturnType<typeof createReactAgent>;
+  constructor(private readonly config: ConfigService) {
+    this.mcpClient = new MultiServerMCPClient({
+      mcpServers: {
+        "group-operator": {
+          // Ensure your start your weather server on port 8000
+          url: this.config.get<string>('MCP_URL'),
+          transport: "http",
+        }
+      }
+    })
+    this.llm = new ChatOpenAI({
+      modelName: this.config.get<string>('LLM_MODEL_NAME'),
+      apiKey: this.config.get<string>('LLM_API_KEY'),
+      configuration: this.config.get<string>('LLM_API_BASE_URL') ? { baseURL: this.config.get<string>('LLM_API_BASE_URL') } : undefined,
+
+    });
+  }
+  async onModuleInit() {
+    // 3. 在生命周期钩子中执行异步操作
+    await this.initializeAgent();
+  }
+
+  private async initializeAgent() {
+    const tools = await this.mcpClient.getTools();
+    this.agent = createReactAgent({
+      llm: this.llm,
+      tools,
+    });
+  }
 
   getHello(): string {
     return 'Hello World!';
@@ -34,6 +66,8 @@ export class AppService {
     console.log("Received message:", data);
     const post_type = data.post_type;
     const sub_type = data.sub_type;
+    console.log("Post type:", post_type);
+    console.log("Sub type:", sub_type);
     let res;
     if (post_type === 'request' && sub_type === "add") {
       res = await this.handleAdd(data);
@@ -51,14 +85,17 @@ export class AppService {
     const selfId = data.self_id;
     const flag = data.flag;
     const groupId = data.group_id;
+    console.log("收到入群申请，AI处理中...");
     const notifyGroup = this.config.get<string>('NOTIFY_GROUP');
     const prompt = getRequestGroup(selfId, userId, flag, groupId, comment, notifyGroup);
-    const mcp = this.config.get<string>('MCP_URL');
-    const agent = new OmAgent();
-    const connectionType: ConnectionType = 'STREAMABLE_HTTP';
-    const connectionArgs = { url: mcp, connectionType: connectionType };
-    agent.addMcpServer(connectionArgs);
-    const res = await agent.ainvoke({ messages: prompt });
+    const res = await this.agent.invoke({
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+    });
     console.log("AI Response:", res);
     return res;
   }

@@ -49,7 +49,7 @@ func (s *HttpServer) HandleReceiveDispatchMessage(msg *types.ReveiceMessage, bod
 }
 func (s *HttpServer) SendToService(rule *config.ReceiveRule, bodyBytes []byte) {
 	resp, err := http.Post(rule.ToAddr, "application/json", bytes.NewBuffer(bodyBytes))
-	if err != nil || resp.StatusCode != 200 {
+	if err != nil || resp.StatusCode/100 != 2 {
 		fmt.Printf("Receive发送消息到服务失败: %v,HTTP状态码: %d", err, resp.StatusCode)
 		return
 	}

@@ -14,6 +14,7 @@ import { AppService } from './app.service';
         LLM_API_BASE_URL: Joi.string().uri().required(),
         LLM_API_KEY: Joi.string().min(1).required(),
         NOTIFY_GROUP: Joi.string().min(1).required(),
+        MCP_URL: Joi.string().uri().required(),
       }),
       validationOptions: {
         abortEarly: false,

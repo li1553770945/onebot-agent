@@ -23,6 +23,9 @@ spec:
           env:
             - name: NODE_ENV
               value: production
+          envFrom:
+            - secretRef:
+                name: icpc-nanjing-agent-secret
           readinessProbe:
             httpGet:
               path: /ping
