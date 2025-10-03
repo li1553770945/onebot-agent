@@ -6,18 +6,18 @@
 
 ## 构建镜像
 
-由于均使用的本地镜像，因此需要先进行构建，请查看[构建和测试](docs/build-and-test.md)章节。
+由于均使用的本地镜像，因此需要先进行构建，请查看[构建和测试](/docs/build-and-test.md)章节。
 
 账号登录等环节均在构建章节中说明。
 
 ##  部署服务
 
-请查看[部署](docs/deployment.md)章节。
+请查看[部署](/docs/deployment.md)章节。
 
 
 ## 新建服务或Agent
 
-请查看[增加一个服务或agent](docs/add-agent.md)章节。
+请查看[增加一个服务或agent](/docs/add-agent.md)章节。
 
 ## 示例
 
@@ -25,4 +25,4 @@
 
 ## 常见问题
 
-请查看[常见问题](docs/q&a.md)章节。
+请查看[常见问题](/docs/q&a.md)章节。
