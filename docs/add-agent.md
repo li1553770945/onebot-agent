@@ -16,7 +16,7 @@
 在 `message-dispatch/config/production.yml` 中增加 / 修改一条规则，指定消息的来源和去向。
 
 
-具体配置规则请参考[message-dispatch的README](message-dispatch/README.md#路由配置规则)。
+具体配置规则请参考[message-dispatch的README](/message-dispatch/README.md)。
 
 3. 更新 ConfigMap
 
