@@ -6,7 +6,9 @@
 
 1. 新建服务
 
-新建一个Agent服务，你可以将test-agent拷贝一份，改个名字，比如icpc-nanjing-agent，然后修改里面的代码实现你想要的功能，打包成镜像并推送到你的镜像仓库。
+新建一个Agent服务，这里所谓的Agent，就是一个http服务，message-dispatch会把onebot收到的消息原样转发给它。
+
+正所谓“A beautiful demo is worth a thousand words.”，项目中提供了一个[示例](docs/examples.md)，这个示例包含一个agent文件夹，也就是一个HTTP服务，接受消息后进行处理；也包含mcp文件夹，是一个处理部分请求的MCP服务器，在agent中使用。你可以将这个示例icpc-nanjing拷贝一份，改个名字，比如personal-assistant，然后修改里面的代码实现你想要的功能，打包成镜像后使用k8s启动。
 
 
 2. 配置规则
@@ -14,7 +16,7 @@
 在 `message-dispatch/config/production.yml` 中增加 / 修改一条规则，指定消息的来源和去向。
 
 
-具体配置规则请参考[message-dispatch的README](../message-dispatch/README.md#路由配置规则)。
+具体配置规则请参考[message-dispatch的README](message-dispatch/README.md#路由配置规则)。
 
 3. 更新 ConfigMap
 

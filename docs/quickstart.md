@@ -21,6 +21,8 @@
 
 ## 示例
 
-为了方便理解，这里把作者负责比赛的一个agent和mcp加到了源码中帮助理解，可尝试部署该agent从而走完一遍完整的流程，请查看[ICPC 南京站入群助手部署指南](docs/examples.md)章节。
+正所谓“A beautiful demo is worth a thousand words”，为了方便理解，这里把作者负责比赛的一个agent和mcp加到了源码中帮助理解，可尝试部署该agent从而走完一遍完整的流程，请查看[ICPC 南京站入群助手部署指南](docs/examples.md)章节。
 
+## 常见问题
 
+请查看[常见问题](docs/q&a.md)章节。
