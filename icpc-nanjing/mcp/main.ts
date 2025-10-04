@@ -88,6 +88,26 @@ server.registerTool(
 );
 
 server.registerTool(
+  "sleep",
+  {
+    description: "暂停指定的秒数，用于等待操作完成",
+    inputSchema: {
+      seconds: z.number().describe("暂停的秒数"),
+    },
+  },
+  async ({ seconds }) => {
+    console.log(`Sleeping for ${seconds} seconds...`);
+    await new Promise(resolve => setTimeout(resolve, seconds * 1000));
+    console.log(`Sleep completed after ${seconds} seconds`);
+    return {
+      content: [
+        { type: "text", text: `已暂停 ${seconds} 秒` },
+      ],
+    };
+  }
+);
+
+server.registerTool(
   "send_group_message",
   {
     description: "发送群消息",

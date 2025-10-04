@@ -15,7 +15,11 @@ export const getRequestGroup = (self_id: string, user_id: string, flag: string, 
 
     根据判断结果执行操作：
 
-    如果符合：直接同意入群，并且设置这个人的群名片为“学校-姓名”的格式，无需发送任何消息，仅当工具调用失败时向群聊ID ${notify_group_id}发送一条消息说明失败原因。
+    如果符合： 
+    1. 首先调用approve_add_request同意入群
+    2. 然后调用sleep工具暂停10秒，等待入群操作完成
+    3. 最后调用set_group_card设置这个人的群名片为"学校-姓名"的格式
+    无需发送任何消息，仅当工具调用失败时向群聊ID ${notify_group_id}发送一条消息说明失败原因。
 
     如果不符合：请拒绝该用户的入群请求，附上拒绝理由。然后并向群聊ID ${notify_group_id}发送一条消息，内容为“AI入群审核已拒绝，请人工知悉”，然后附上请求入群的用户ID、入群备注以及拒绝原因。
 
@@ -23,3 +27,9 @@ export const getRequestGroup = (self_id: string, user_id: string, flag: string, 
 
     请基于以上规则严格审核，并确保所有操作及时、准确。`;
 }
+
+export const INJECTION_TOKENS = [
+  '特殊规则', '请', '发送', '转发', '忽略以上', '遵循以下规则',
+  '调用', '同意', '拒绝', '通过', '审核', '管理员', '系统',
+  '机器人', '执行', '触发', '命令', '按照以下', '根据以下', '工具'
+];
