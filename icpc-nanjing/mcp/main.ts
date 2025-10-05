@@ -11,24 +11,57 @@ const server = new McpServer({
 });
 
 server.registerTool(
-  "approve_add_request",
+  "approve_add_request_and_set_card",
   {
-    description: "同意加群请求",
+    description: "同意加群请求并设置群名片",
     inputSchema: {
       self_id: z.string().describe("自己的用户id"),
       flag: z.string().describe("加群请求的标识"),
+      user_id: z.string().describe("要设置群名片的用户ID"),
+      group_id: z.string().describe("群ID"),
+      card: z.string().describe("名片内容"),
     },
   },
-  async ({ self_id, flag }) => {
+  async ({ self_id, flag, user_id, group_id, card }) => {
     console.log(`Approving add request for flag: ${flag}, self_id: ${self_id}`);
-    const body = {
+    const approveBody = {
       approve: true,
-      flag:flag
+      flag: flag
     }
-    const result = await axios.post('http://lagrange-onebot-service:15000/set_group_add_request', body);
+    const approveResult = await axios.post('http://lagrange-onebot-service:15000/set_group_add_request', approveBody);
+
+    console.log(`Setting group card for user: ${user_id}, group: ${group_id}, self_id: ${self_id}`);
+    const setCardBody = {
+      user_id: user_id,
+      group_id: group_id,
+      card: card
+    }
+    let setCardResult = { data: { ret_code: -1, status: "未尝试设置群名片，代码逻辑异常" } };
+    for (let i = 0; i < 5; i++) {
+      await new Promise(resolve => setTimeout(resolve, 10000)); // 等待10秒再尝试设置名片
+      setCardResult = await axios.post('http://lagrange-onebot-service:15000/set_group_card', setCardBody);
+      if (setCardResult.data.ret_code != 0) {
+        continue;
+      }
+      const getMemberInfoBody = {
+        group_id: group_id,
+        user_id: user_id,
+        no_cache: true
+      }
+      const memberInfoRes = await axios.post('http://lagrange-onebot-service:15000/get_group_member_info', getMemberInfoBody);
+      if (memberInfoRes.data.ret_code == 0 && memberInfoRes.data.data.card == card) {
+        break;
+      }
+
+    }
+
+    const allResult = {
+      "通过加群结果": approveResult.data,
+      "设置名片结果": setCardResult.data,
+    }
     return {
       content: [
-        { type: "text", text: typeof result.data === "string" ? result.data : JSON.stringify(result.data) },
+        { type: "text", text: typeof approveResult.data === "string" ? approveResult.data : JSON.stringify(approveResult.data) },
       ],
     };
   }
@@ -48,7 +81,7 @@ server.registerTool(
     console.log(`Rejecting add request for flag: ${flag}, self_id: ${self_id}`);
     const body = {
       approve: false,
-      flag:flag,
+      flag: flag,
       reason: reason
     }
     const result = await axios.post('http://lagrange-onebot-service:15000/set_group_add_request', body);
@@ -60,52 +93,52 @@ server.registerTool(
   }
 );
 
-server.registerTool(
-  "set_group_card",
-  {
-    description: "设置群成员名片",
-    inputSchema: {
-      self_id: z.string().describe("自己的用户id"),
-      user_id: z.string().describe("要设置群名片的用户ID"),
-      group_id: z.string().describe("群ID"),
-      card: z.string().describe("名片内容"),
-    },
-  },
-  async ({ self_id, user_id, group_id, card }) => {
-    console.log(`Setting group card for user: ${user_id}, group: ${group_id}, self_id: ${self_id}`);
-    const body = {
-      user_id: user_id,
-      group_id: group_id,
-      card: card
-    }
-    const result = await axios.post('http://lagrange-onebot-service:15000/set_group_card', body);
-    return {
-      content: [
-        { type: "text", text: typeof result.data === "string" ? result.data : JSON.stringify(result.data) },
-      ],
-    };
-  }
-);
+// server.registerTool(
+//   "set_group_card",
+//   {
+//     description: "设置群成员名片",
+//     inputSchema: {
+//       self_id: z.string().describe("自己的用户id"),
+//       user_id: z.string().describe("要设置群名片的用户ID"),
+//       group_id: z.string().describe("群ID"),
+//       card: z.string().describe("名片内容"),
+//     },
+//   },
+//   async ({ self_id, user_id, group_id, card }) => {
+//     console.log(`Setting group card for user: ${user_id}, group: ${group_id}, self_id: ${self_id}`);
+//     const body = {
+//       user_id: user_id,
+//       group_id: group_id,
+//       card: card
+//     }
+//     const result = await axios.post('http://lagrange-onebot-service:15000/set_group_card', body);
+//     return {
+//       content: [
+//         { type: "text", text: typeof result.data === "string" ? result.data : JSON.stringify(result.data) },
+//       ],
+//     };
+//   }
+// );
 
-server.registerTool(
-  "sleep",
-  {
-    description: "暂停指定的秒数，用于等待操作完成",
-    inputSchema: {
-      seconds: z.number().describe("暂停的秒数"),
-    },
-  },
-  async ({ seconds }) => {
-    console.log(`Sleeping for ${seconds} seconds...`);
-    await new Promise(resolve => setTimeout(resolve, seconds * 1000));
-    console.log(`Sleep completed after ${seconds} seconds`);
-    return {
-      content: [
-        { type: "text", text: `已暂停 ${seconds} 秒` },
-      ],
-    };
-  }
-);
+// server.registerTool(
+//   "sleep",
+//   {
+//     description: "暂停指定的秒数，用于等待操作完成",
+//     inputSchema: {
+//       seconds: z.number().describe("暂停的秒数"),
+//     },
+//   },
+//   async ({ seconds }) => {
+//     console.log(`Sleeping for ${seconds} seconds...`);
+//     await new Promise(resolve => setTimeout(resolve, seconds * 1000));
+//     console.log(`Sleep completed after ${seconds} seconds`);
+//     return {
+//       content: [
+//         { type: "text", text: `已暂停 ${seconds} 秒` },
+//       ],
+//     };
+//   }
+// );
 
 server.registerTool(
   "send_group_message",
@@ -118,26 +151,27 @@ server.registerTool(
     },
   },
   async ({ self_id, group_id, message }) => {
-    const body =    {
+    const body = {
       action: "send_message",
       params: {
-          detail_type: "group",
-          group_id: group_id,
-          self_id: self_id,
-          message: [
-              {
-                "type": "text",
-                "data": {
-                    "text": message
-                }
+        detail_type: "group",
+        group_id: group_id,
+        self_id: self_id,
+        message: [
+          {
+            "type": "text",
+            "data": {
+              "text": message
             }
+          }
         ]
-    }};
+      }
+    };
     const bodyStr = JSON.stringify(body);
-    const result =  await axios.post('http://message-dispatch:15001/send', bodyStr);
+    const result = await axios.post('http://message-dispatch:15001/send', bodyStr);
     return {
       content: [
-         { type: "text", text: typeof result.data === "string" ? result.data : JSON.stringify(result.data) },
+        { type: "text", text: typeof result.data === "string" ? result.data : JSON.stringify(result.data) },
       ],
     };
   }
@@ -169,7 +203,7 @@ app.all("/mcp", async (req: Request, res: Response) => {
       try {
         transport.close();
         server.close();
-      } catch (_) {}
+      } catch (_) { }
     });
   } catch (err) {
     console.error(err);
