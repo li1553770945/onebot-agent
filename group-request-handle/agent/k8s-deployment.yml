@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: icpc-nanjing-agent
+  name: group-request-handler-agent
   labels:
-    app: icpc-nanjing-agent
+    app: group-request-handler-agent
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: icpc-nanjing-agent
+      app: group-request-handler-agent
   template:
     metadata:
       labels:
-        app: icpc-nanjing-agent
+        app: group-request-handler-agent
     spec:
       containers:
-        - name: icpc-nanjing-agent
-          image: icpc-nanjing-agent:local # 本地构建的镜像名
+        - name: group-request-handler-agent
+          image: group-request-handler-agent:local # 本地构建的镜像名
           imagePullPolicy: Never          # 使用本地镜像（kind 或 local k8s）
           ports:
             - containerPort: 3000
@@ -25,7 +25,7 @@ spec:
               value: production
           envFrom:
             - secretRef:
-                name: icpc-nanjing-agent-secret
+                name: group-request-handler-agent-secret
           readinessProbe:
             httpGet:
               path: /ping

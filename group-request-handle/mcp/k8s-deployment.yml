@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: icpc-nanjing-mcp
+  name: group-request-handler-mcp
   labels:
-    app: icpc-nanjing-mcp
+    app: group-request-handler-mcp
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: icpc-nanjing-mcp
+      app: group-request-handler-mcp
   template:
     metadata:
       labels:
-        app: icpc-nanjing-mcp
+        app: group-request-handler-mcp
     spec:
       containers:
-        - name: icpc-nanjing-mcp
-          image: icpc-nanjing-mcp:local # 本地或仓库中的镜像名
+        - name: group-request-handler-mcp
+          image: group-request-handler-mcp:local # 本地或仓库中的镜像名
           imagePullPolicy: Never  # 使用 kind 或本地 k8s 时
           ports:
             - containerPort: 3000

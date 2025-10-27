@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: icpc-nanjing-agent
+  name: group-request-handler-agent
   labels:
-    app: icpc-nanjing-agent
+    app: group-request-handler-agent
 spec:
   type: ClusterIP
   selector:
-    app: icpc-nanjing-agent
+    app: group-request-handler-agent
   ports:
     - name: http
       port: 3000
