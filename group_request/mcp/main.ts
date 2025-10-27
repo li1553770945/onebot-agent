@@ -1,0 +1,230 @@
+import express, { Request, Response } from "express";
+import { z } from "zod";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import axios from "axios";
+
+// 1) 创建 MCP 服务器，仅注册一个 "sum" 工具
+const server = new McpServer({
+  name: "sum-server",
+  version: "1.0.0",
+});
+
+server.registerTool(
+  "approve_add_request_and_set_card",
+  {
+    description: "同意加群请求并设置群名片",
+    inputSchema: {
+      self_id: z.string().describe("自己的用户id"),
+      flag: z.string().describe("加群请求的标识"),
+      user_id: z.string().describe("要设置群名片的用户ID"),
+      group_id: z.string().describe("群ID"),
+      card: z.string().describe("名片内容"),
+    },
+  },
+  async ({ self_id, flag, user_id, group_id, card }) => {
+    console.log(`Approving add request for flag: ${flag}, self_id: ${self_id}`);
+    const approveBody = {
+      approve: true,
+      flag: flag
+    }
+    
+    // 同意入群重试机制
+    let approveResult = { data: { ret_code: -1, status: "未尝试同意入群，代码逻辑异常" } };
+    for (let i = 0; i < 5; i++) {
+      approveResult = await axios.post('http://lagrange-onebot-service:15000/set_group_add_request', approveBody);
+      if (approveResult.data.ret_code == 0) {
+        break;
+      }
+      await new Promise(resolve => setTimeout(resolve, 2000)); // 等待2秒再重试
+      
+    }
+
+    console.log(`Setting group card for user: ${user_id}, group: ${group_id}, self_id: ${self_id}`);
+    const setCardBody = {
+      user_id: user_id,
+      group_id: group_id,
+      card: card
+    }
+    let setCardResult = { data: { ret_code: -1, status: "未尝试设置群名片，代码逻辑异常" } };
+    for (let i = 0; i < 5; i++) {
+      await new Promise(resolve => setTimeout(resolve, 10000)); // 等待10秒再尝试设置名片
+      setCardResult = await axios.post('http://lagrange-onebot-service:15000/set_group_card', setCardBody);
+      if (setCardResult.data.ret_code != 0) {
+        continue;
+      }
+      const getMemberInfoBody = {
+        group_id: group_id,
+        user_id: user_id,
+        no_cache: true
+      }
+      const memberInfoRes = await axios.post('http://lagrange-onebot-service:15000/get_group_member_info', getMemberInfoBody);
+      if (memberInfoRes.data.ret_code == 0 && memberInfoRes.data.data.card == card) {
+        break;
+      }
+
+    }
+
+    const allResult = {
+      "通过加群结果": approveResult.data,
+      "设置名片结果": setCardResult.data,
+    }
+    return {
+      content: [
+        { type: "text", text: typeof approveResult.data === "string" ? approveResult.data : JSON.stringify(approveResult.data) },
+      ],
+    };
+  }
+);
+
+server.registerTool(
+  "reject_add_request",
+  {
+    description: "拒绝加群请求",
+    inputSchema: {
+      self_id: z.string().describe("自己的用户id"),
+      flag: z.string().describe("加群请求的标识"),
+      reason: z.string().describe("拒绝理由").optional(),
+    },
+  },
+  async ({ self_id, flag, reason }) => {
+    console.log(`Rejecting add request for flag: ${flag}, self_id: ${self_id}`);
+    const body = {
+      approve: false,
+      flag: flag,
+      reason: reason
+    }
+    const result = await axios.post('http://lagrange-onebot-service:15000/set_group_add_request', body);
+    return {
+      content: [
+        { type: "text", text: typeof result.data === "string" ? result.data : JSON.stringify(result.data) },
+      ],
+    };
+  }
+);
+
+// server.registerTool(
+//   "set_group_card",
+//   {
+//     description: "设置群成员名片",
+//     inputSchema: {
+//       self_id: z.string().describe("自己的用户id"),
+//       user_id: z.string().describe("要设置群名片的用户ID"),
+//       group_id: z.string().describe("群ID"),
+//       card: z.string().describe("名片内容"),
+//     },
+//   },
+//   async ({ self_id, user_id, group_id, card }) => {
+//     console.log(`Setting group card for user: ${user_id}, group: ${group_id}, self_id: ${self_id}`);
+//     const body = {
+//       user_id: user_id,
+//       group_id: group_id,
+//       card: card
+//     }
+//     const result = await axios.post('http://lagrange-onebot-service:15000/set_group_card', body);
+//     return {
+//       content: [
+//         { type: "text", text: typeof result.data === "string" ? result.data : JSON.stringify(result.data) },
+//       ],
+//     };
+//   }
+// );
+
+// server.registerTool(
+//   "sleep",
+//   {
+//     description: "暂停指定的秒数，用于等待操作完成",
+//     inputSchema: {
+//       seconds: z.number().describe("暂停的秒数"),
+//     },
+//   },
+//   async ({ seconds }) => {
+//     console.log(`Sleeping for ${seconds} seconds...`);
+//     await new Promise(resolve => setTimeout(resolve, seconds * 1000));
+//     console.log(`Sleep completed after ${seconds} seconds`);
+//     return {
+//       content: [
+//         { type: "text", text: `已暂停 ${seconds} 秒` },
+//       ],
+//     };
+//   }
+// );
+
+server.registerTool(
+  "send_group_message",
+  {
+    description: "发送群消息",
+    inputSchema: {
+      self_id: z.string().describe("自己的用户id"),
+      group_id: z.string().describe("群组id"),
+      message: z.string().describe("消息内容"),
+    },
+  },
+  async ({ self_id, group_id, message }) => {
+    const body = {
+      action: "send_message",
+      params: {
+        detail_type: "group",
+        group_id: group_id,
+        self_id: self_id,
+        message: [
+          {
+            "type": "text",
+            "data": {
+              "text": message
+            }
+          }
+        ]
+      }
+    };
+    const bodyStr = JSON.stringify(body);
+    const result = await axios.post('http://message-dispatch:15001/send', bodyStr);
+    return {
+      content: [
+        { type: "text", text: typeof result.data === "string" ? result.data : JSON.stringify(result.data) },
+      ],
+    };
+  }
+);
+
+
+
+// 2) 用 Express 暴露一个 MCP 端点（/mcp），采用 Streamable HTTP（无会话模式）
+const app = express();
+app.use(express.json());
+
+// 简单健康检查：GET /ping
+app.get("/ping", (_req: Request, res: Response) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+// 仅保留一个端点：/mcp
+app.all("/mcp", async (req: Request, res: Response) => {
+  try {
+    const transport = new StreamableHTTPServerTransport({
+      sessionIdGenerator: undefined,
+    });
+
+    await server.connect(transport);
+    await transport.handleRequest(req, res, (req as any).body);
+
+    // 请求关闭时清理
+    res.on("close", () => {
+      try {
+        transport.close();
+        server.close();
+      } catch (_) { }
+    });
+  } catch (err) {
+    console.error(err);
+    if (!res.headersSent) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+});
+
+// 3) 启动在 3000 端口
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`MCP Streamable HTTP server listening on :${PORT}/mcp`);
+});

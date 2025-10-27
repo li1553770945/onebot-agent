@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: icpc-nanjing-agent
+  labels:
+    app: icpc-nanjing-agent
+spec:
+  type: ClusterIP
+  selector:
+    app: icpc-nanjing-agent
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
