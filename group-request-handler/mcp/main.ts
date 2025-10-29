@@ -30,10 +30,10 @@ server.registerTool(
     }
     
     // 同意入群重试机制
-    let approveResult = { data: { ret_code: -1, status: "未尝试同意入群，代码逻辑异常" } };
+    let approveResult = { data: { retcode: -1, status: "未尝试同意入群，代码逻辑异常" } };
     for (let i = 0; i < 5; i++) {
-      approveResult = await axios.post('http://lagrange-onebot-service:15000/set_group_add_request', approveBody);
-      if (approveResult.data.ret_code == 0) {
+      approveResult = await axios.post('http:/host.minikube.internal:30000/set_group_add_request', approveBody);
+      if (approveResult.data.retcode == 0) {
         break;
       }
       await new Promise(resolve => setTimeout(resolve, 2000)); // 等待2秒再重试
@@ -46,11 +46,13 @@ server.registerTool(
       group_id: group_id,
       card: card
     }
-    let setCardResult = { data: { ret_code: -1, status: "未尝试设置群名片，代码逻辑异常" } };
+    let setCardResult = { data: { retcode: -1, status: "未尝试设置群名片，代码逻辑异常" } };
     for (let i = 0; i < 5; i++) {
-      await new Promise(resolve => setTimeout(resolve, 10000)); // 等待10秒再尝试设置名片
-      setCardResult = await axios.post('http://lagrange-onebot-service:15000/set_group_card', setCardBody);
-      if (setCardResult.data.ret_code != 0) {
+      await new Promise(resolve => setTimeout(resolve, 5000)); // 等待10秒再尝试设置名片
+      setCardResult = await axios.post('http://host.minikube.internal:30000/set_group_card', setCardBody);
+      console.log("设置群名片结果", setCardResult.data);
+      if (setCardResult.data.retcode != 0) {
+        console.log(`设置群名片失败:setCardResult.data.retcode:${setCardResult.data.retcode}不为0`);
         continue;
       }
       const getMemberInfoBody = {
@@ -58,8 +60,9 @@ server.registerTool(
         user_id: user_id,
         no_cache: true
       }
-      const memberInfoRes = await axios.post('http://lagrange-onebot-service:15000/get_group_member_info', getMemberInfoBody);
-      if (memberInfoRes.data.ret_code == 0 && memberInfoRes.data.data.card == card) {
+      const memberInfoRes = await axios.post('http://host.minikube.internal:30000/get_group_member_info', getMemberInfoBody);
+      console.log("获取群成员信息结果", memberInfoRes.data);
+      if (memberInfoRes.data.retcode == 0 && memberInfoRes.data.data.card == card) {
         break;
       }
 
@@ -69,6 +72,7 @@ server.registerTool(
       "通过加群结果": approveResult.data,
       "设置名片结果": setCardResult.data,
     }
+    console.log(allResult)
     return {
       content: [
         { type: "text", text: typeof approveResult.data === "string" ? approveResult.data : JSON.stringify(approveResult.data) },
@@ -94,7 +98,7 @@ server.registerTool(
       flag: flag,
       reason: reason
     }
-    const result = await axios.post('http://lagrange-onebot-service:15000/set_group_add_request', body);
+    const result = await axios.post('http://host.minikube.internal:30000/set_group_add_request', body);
     return {
       content: [
         { type: "text", text: typeof result.data === "string" ? result.data : JSON.stringify(result.data) },
@@ -103,52 +107,6 @@ server.registerTool(
   }
 );
 
-// server.registerTool(
-//   "set_group_card",
-//   {
-//     description: "设置群成员名片",
-//     inputSchema: {
-//       self_id: z.string().describe("自己的用户id"),
-//       user_id: z.string().describe("要设置群名片的用户ID"),
-//       group_id: z.string().describe("群ID"),
-//       card: z.string().describe("名片内容"),
-//     },
-//   },
-//   async ({ self_id, user_id, group_id, card }) => {
-//     console.log(`Setting group card for user: ${user_id}, group: ${group_id}, self_id: ${self_id}`);
-//     const body = {
-//       user_id: user_id,
-//       group_id: group_id,
-//       card: card
-//     }
-//     const result = await axios.post('http://lagrange-onebot-service:15000/set_group_card', body);
-//     return {
-//       content: [
-//         { type: "text", text: typeof result.data === "string" ? result.data : JSON.stringify(result.data) },
-//       ],
-//     };
-//   }
-// );
-
-// server.registerTool(
-//   "sleep",
-//   {
-//     description: "暂停指定的秒数，用于等待操作完成",
-//     inputSchema: {
-//       seconds: z.number().describe("暂停的秒数"),
-//     },
-//   },
-//   async ({ seconds }) => {
-//     console.log(`Sleeping for ${seconds} seconds...`);
-//     await new Promise(resolve => setTimeout(resolve, seconds * 1000));
-//     console.log(`Sleep completed after ${seconds} seconds`);
-//     return {
-//       content: [
-//         { type: "text", text: `已暂停 ${seconds} 秒` },
-//       ],
-//     };
-//   }
-// );
 
 server.registerTool(
   "send_group_message",

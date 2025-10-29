@@ -18,5 +18,5 @@ sender:
     - name: "aibot的QQ"
       onebot_type: lagrange
       self_id: "2731190200"
-      to_addr: http://lagrange-onebot-service:15000
+      to_addr: http://host.minikube.internal:30000
       is_end: true

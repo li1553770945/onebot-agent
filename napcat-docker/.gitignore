@@ -1,4 +1,3 @@
-data/*
-!data/test.txt
-nohup.out
-nohup.pid
+*.AppImage
+cache/
+config/

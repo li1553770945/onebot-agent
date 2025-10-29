@@ -49,16 +49,16 @@ sequenceDiagram
 ```
 
 ## 服务列表
+。
 
-## lagrange-core
-
-lagrange.onebot可执行文件。
-
-## message-dispatch 
+### message-dispatch
 
 消息分发以及接收发送服务。
 
-## message-mcp
 
-消息发送的MCP服务器。
+## 使用的端口
 
+|内部端口|外部端口|运行方式|访问地址|说明|
+|---|---|---|---|---|
+| - | 30000 |宿主机运行|localhost:30000|napcat的http-server，用于发送|
+|15001|30001|容器内运行|localhost:30001|消息分发服务|

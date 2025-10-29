@@ -5,10 +5,11 @@ metadata:
   labels:
     app: message-dispatch
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: message-dispatch
   ports:
     - protocol: TCP
       port: 15001
       targetPort: 15001
+      nodePort: 30001

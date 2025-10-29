@@ -46,34 +46,31 @@ node dist/main.js
 ## Docker 构建与运行
 ```bash
 # 构建镜像 (本地 tag)
-docker build -t mcp-server:local .
+docker build -t group-request-handler-mcp:local .
 # 运行
-docker run --rm -p 3000:3000 mcp-server:local
+docker run --rm -p 3000:3000 group-request-handler-mcp:local
 curl http://127.0.0.1:3000/ping  # ok
-```
-
-## 推送到镜像仓库（示例）
-```bash
-# 修改 tag
-export IMAGE=my.registry.local/mcp-server:1.0.0
-# 或 Windows PowerShell: $env:IMAGE="my.registry.local/mcp-server:1.0.0"
-docker tag mcp-server:local %IMAGE%
-docker push %IMAGE%
 ```
 
 ## Kubernetes 部署（本地 kind / k3s）
 ```bash
-# 使用本地镜像（kind 需先导入）
-# kind load docker-image mcp-server:local
+# 使用本地镜像(minikube 需先导入或使用eval $(minikube docker-env) )
+eval $(minikube docker-env)
 kubectl apply -f k8s-deployment.yml
 kubectl apply -f k8s-service.yml
-
-kubectl get pods -l app=mcp-server
-kubectl logs -f deploy/mcp-server
-kubectl port-forward svc/mcp-server 3000:3000
-curl http://127.0.0.1:3000/ping
 ```
 
-## 健康检查
-- Readiness: GET /ping -> 200 ok
-- Liveness:  GET /ping -> 200 ok
+如果是更改了代码重新运行，需要:
+
+```bash
+# 重新构建镜像
+docker build -t group-request-handler-mcp:local .  
+eval $(minikube docker-env)
+
+kubectl rollout restart deployment/group-request-handler-mcp
+
+# 或者先删除后重建
+# 删除旧的 deployment
+kubectl delete deployment group-request-handler-mcp
+# 重新应用 deployment
+kubectl apply -f k8s-deployment.yml
