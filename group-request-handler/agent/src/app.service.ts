@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { getRequestGroup } from './prompts';
+import { groupAuditConfigs, GroupAuditConfig } from './prompts';
 import { MultiServerMCPClient } from "@langchain/mcp-adapters";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
@@ -14,7 +14,6 @@ export class AppService {
     this.mcpClient = new MultiServerMCPClient({
       mcpServers: {
         "group-operator": {
-          // Ensure your start your weather server on port 8000
           url: this.config.get<string>('MCP_URL'),
           transport: "http",
         }
@@ -79,58 +78,74 @@ export class AppService {
     };
   }
 
-  private async handleAdd(data: any) {
-    console.log("收到入群申请，AI处理中...");
-
-    const comment = data.comment;
-    const notifyGroup = this.config.get<string>('NOTIFY_GROUP');
-    const userId = data.user_id;
-    const selfId = data.self_id;
-    const flag = data.flag;
-    const groupId = data.group_id;
-    const validRes = await this.checkCommentValid(comment);
-
-    if (!validRes.valid) {
-      const tools = await this.mcpClient.getTools();
-      const rejectTool = tools.find(tool => tool.name === 'reject_add_request'); // 假设有这个工具
-      if (rejectTool) {
-        const result = await rejectTool.invoke({
-          self_id: selfId,
-          flag: flag,
-          reason: "备注不符合“学校-姓名”格式"
-        });
-        return result;
-      }
-      const send_group_message = tools.find(tool => tool.name === 'send_group_message'); // 假设有这个工具
-      if (send_group_message) {
-        const result = await send_group_message.invoke({
-          self_id: selfId,
-          group_id: notifyGroup,
-          message: `AI入群审核已拒绝，请人工知悉。用户ID: ${userId}，入群备注: ${comment}，拒绝理由: ${validRes.reason}`
-        });
-        return result;
-      }
-      return;
-    }
-
-
-
-    const prompt = getRequestGroup(selfId, userId, flag, groupId, comment, notifyGroup);
+  private async handle(selfId: string, userId: string, flag: string, config: GroupAuditConfig, comment: string) {
     const res = await this.agent.invoke({
       messages: [
         {
           role: "user",
-          content: prompt,
+          content: config.getPrompt(selfId, userId, flag, config.groupId, comment, config.notifyGroupId),
         },
       ],
     });
     console.log("AI Response:", res);
     return res;
   }
+
+  private async handleAdd(data: any) {
+    const groupId = data.group_id;
+
+    console.log(`收到${groupId}入群申请，AI处理中...`);
+    
+    // 查找匹配的群审核配置
+    for (const config of groupAuditConfigs) {
+      if (groupId === config.groupId) {
+        const comment = data.comment;
+        const userId = data.user_id;
+        const selfId = data.self_id;
+        const flag = data.flag;
+        
+        // 先进行格式校验
+        const validRes = await this.checkCommentValid(comment);
+
+        if (!validRes.valid) {
+          // 备注不合法，直接拒绝
+          const tools = await this.mcpClient.getTools();
+          const rejectTool = tools.find(tool => tool.name === 'reject_add_request');
+          if (rejectTool) {
+            const result = await rejectTool.invoke({
+              self_id: selfId,
+              flag: flag,
+              reason: validRes.reason
+            });
+            return result;
+          }
+          
+          // 通知管理群
+          const send_group_message = tools.find(tool => tool.name === 'send_group_message');
+          if (send_group_message) {
+            const result = await send_group_message.invoke({
+              self_id: selfId,
+              group_id: config.notifyGroupId,
+              message: `AI入群审核已拒绝，请人工知悉。用户ID: ${userId}，入群备注: ${comment}，拒绝理由: ${validRes.reason}`
+            });
+            return result;
+          }
+          return;
+        }
+
+        // 备注合法，调用 AI 进行审核
+        return await this.handle(selfId, userId, flag, config, comment);
+      }
+    }
+    
+    // 循环结束都没找到匹配的群
+    console.log(`未找到群 ${groupId} 的配置，忽略此请求`);
+    return { message: "未找到符合条件的群聊配置，忽略此请求" };
+  }
   private async checkCommentValid(comment: string): Promise<{
-    valid: boolean,
-    reason?: string
-  }> {
+      valid: boolean,
+      reason?: string
+    }> {
     if (!comment) {
       return { valid: false, reason: "备注内容为空" };
     }
