@@ -5,6 +5,7 @@
 #   NAPCAT_DATA_PATH=/data ./deploy.sh  # 指定自定义绝对路径
 #   NAPCAT_DATA_PATH=/napcat-docker ./deploy.sh  # Minikube 挂载点
 
+export NAPCAT_DATA_PATH=${NAPCAT_DATA_PATH:-/napcat-docker}
 
 echo "Deploying with:"
 echo "  NAPCAT_DATA_PATH=$NAPCAT_DATA_PATH"

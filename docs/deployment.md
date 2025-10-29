@@ -65,8 +65,8 @@ bash deploy.sh
 
 2. 客户端：
 
-主机：message-dispatch.message-dispatch.svc.cluster.local
-端口：15001
+上报URL：http://message-dispatch:15000/
+
 
 
 ## 修改代码后重新部署
